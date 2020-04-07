@@ -4,7 +4,8 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "server": "nodemon ./server/server.js"
   },
   "repository": {
     "type": "git",
@@ -15,5 +16,8 @@
   "bugs": {
     "url": "https://github.com/peritomoreno/reviews-service/issues"
   },
-  "homepage": "https://github.com/peritomoreno/reviews-service#readme"
+  "homepage": "https://github.com/peritomoreno/reviews-service#readme",
+  "dependencies": {
+    "express": "^4.17.1"
+  }
 }
