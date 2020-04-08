@@ -19,15 +19,15 @@ autoIncrement.initialize(db);
 
 var reviewsSchema = new mongoose.Schema({
     // id: #id will be added automatically on each new review
-    product_id: Number,
+    product: Number,
     rating: Number,
     summary: String,
+    body: String,
     recommend: Boolean,
     response: String,
-    body: String,
     date: String,
-    name: String,
-    email: String,
+    reviewer_name: String,
+    reviewer_email: String,
     helpfulness: Number,
     reported: Boolean,
     photos: [Object]
@@ -43,7 +43,7 @@ var Reviews = db.model('Reviews', reviewsSchema);
 /* ******************* */
 
 var reviewsMetaSchema = new mongoose.Schema({
-    product_id: Number,
+    product: Number,
     ratings: Object,
     recommended: Object,
     characteristics: Object
