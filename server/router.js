@@ -1,6 +1,11 @@
 var express = require("express");
 const { Reviews, ReviewsMeta } = require("../db/db.js");
-const { RatingQuery, RecommendedQuery, CharacteristicsQuery } = require("../db/db.aggregation.js");
+const {
+  RatingQuery,
+  RecommendedQuery,
+  CharacteristicsQuery,
+} = require("../db/db.aggregation.js");
+const { formatMetaCharacteristics } = require("./formatMetaCharacteristics.js");
 const { exampleReview } = require("../db/example.js");
 
 // create express router
@@ -13,36 +18,39 @@ router.use(function timeLog(req, res, next) {
 });
 
 router.get("/reviews/:product_id", (req, res) => {
-  // Reviews.createAsync(exampleReview);
-
+  // will be a new review each time this is called -> Reviews.createAsync(exampleReview);
   let { product_id } = req.params;
   product_id = Number(product_id);
   res.send("Hello New Review Submission!");
 
-  let metaData = {"product_id": product_id};
+  let metaData = { product: product_id };
 
   Reviews.aggregateAsync(RatingQuery(product_id))
     .then((results) => {
-      let data = {};
+      let ratingData = {};
       // O(1) Time Complexity (max 6 objects to loop through)
       for (let rating of results) {
-        data[rating._id] = rating.count;
+        ratingData[rating._id] = rating.count;
       }
-      metaData.ratings = data;
-      console.log("results of ratings aggregation: ", metaData);
+      metaData.ratings = ratingData;
       return Reviews.aggregateAsync(RecommendedQuery(product_id));
     })
     .then((results) => {
-      let data = {};
+      let recoData = {};
       for (let recommended of results) {
-        data[recommended._id] = recommended.count;
+        recoData[recommended._id] = recommended.count;
       }
-      metaData.recommended = data;
-      console.log("results of recommended aggregation: ", metaData);
+      // O(1) Time Complexity (max 6 objects to loop through)
+      metaData.recommended = recoData;
       return Reviews.aggregateAsync(CharacteristicsQuery(product_id));
     })
-    .then(results => {
-      console.log("results of characteristics query: ", results)
+    .then((results) => {
+      resultsObj = results[0];
+      // O(1) Time Complexity (max 6 objects to loop through)
+      let charData = formatMetaCharacteristics(resultsObj);
+      metaData.characteristics = charData;
+      // Find one and update meta-data document / create new meta-data document
+      ReviewsMeta.findOneAndUpdate({product: product_id}, metaData, {upsert: true})
     })
     .catch((err) => {
       console.log("err: ", err);
