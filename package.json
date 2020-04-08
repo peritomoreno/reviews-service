@@ -18,6 +18,10 @@
   },
   "homepage": "https://github.com/peritomoreno/reviews-service#readme",
   "dependencies": {
-    "express": "^4.17.1"
+    "bluebird": "^3.7.2",
+    "express": "^4.17.1",
+    "mongoose": "^5.9.7",
+    "mongoose-auto-increment": "^5.0.1",
+    "nodemon": "^2.0.2"
   }
 }
