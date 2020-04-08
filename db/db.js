@@ -33,6 +33,7 @@ var reviewsSchema = new mongoose.Schema({
   helpfulness: Number,
   reported: Boolean,
   photos: [Object],
+  characteristics: Object
 });
 
 reviewsSchema.plugin(autoIncrement.plugin, "Reviews");
