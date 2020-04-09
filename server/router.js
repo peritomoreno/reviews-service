@@ -4,6 +4,7 @@ const {
   RatingQuery,
   RecommendedQuery,
   CharacteristicsQuery,
+  ETLAddPhotos,
 } = require("../db/db.aggregation.js");
 const { formatMetaCharacteristics } = require("./formatMetaCharacteristics.js");
 const { exampleReview } = require("../db/example.js");
@@ -17,8 +18,13 @@ router.use(function timeLog(req, res, next) {
   next();
 });
 
+router.get("/reviews/PhotoLoad", (req, res) => {
+  Reviews.aggregateAsync(ETLAddPhotos());
+  res.send("Working on initial load!");
+});
+
 router.get("/reviews/:product_id", (req, res) => {
-  // will be a new review each time this is called -> Reviews.createAsync(exampleReview);
+  Reviews.createAsync(exampleReview);
   let { product_id } = req.params;
   product_id = Number(product_id);
   res.send("Hello New Review Submission!");
@@ -50,7 +56,9 @@ router.get("/reviews/:product_id", (req, res) => {
       let charData = formatMetaCharacteristics(resultsObj);
       metaData.characteristics = charData;
       // Find one and update meta-data document / create new meta-data document
-      ReviewsMeta.findOneAndUpdate({product: product_id}, metaData, {upsert: true})
+      ReviewsMeta.findOneAndUpdate({ product: product_id }, metaData, {
+        upsert: true,
+      });
     })
     .catch((err) => {
       console.log("err: ", err);
