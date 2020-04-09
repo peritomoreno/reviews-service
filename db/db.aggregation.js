@@ -73,39 +73,39 @@ module.exports.CharacteristicsQuery = (product_id) => {
   ];
 };
 
-module.exports.ETLAddPhotos = () => {
-  return [
-    {
-      $lookup: {
-        from: "reviews_photos",
-        localField: "id",
-        foreignField: "review_id",
-        as: "photos",
-      },
-    },
-    {
-      $out: "reviews",
-    },
-  ];
-};
+// module.exports.ETLAddPhotos = () => {
+//   return [
+//     {
+//       $lookup: {
+//         from: "reviews_photos",
+//         localField: "id",
+//         foreignField: "review_id",
+//         as: "photos",
+//       },
+//     },
+//     {
+//       $out: "reviews",
+//     },
+//   ];
+// };
 
-module.exports.ETLAddCharacteristics = () => {
-  return [
-    {
-      $lookup: {
-        from: "characteristics_combo",
-        localField: "id", // review id
-        foreignField: "review_id",
-        as: "characteristics",
-      },
-    },
-    {
-      $unwind: {
-        path: "$characteristics",
-      },
-    },
-    {
-      $out: "reviews", // "reviews_final"...previously
-    },
-  ];
-};
+// module.exports.ETLAddCharacteristics = () => {
+//   return [
+//     {
+//       $lookup: {
+//         from: "characteristics_combo",
+//         localField: "id", // review id
+//         foreignField: "review_id",
+//         as: "characteristics",
+//       },
+//     },
+//     {
+//       $unwind: {
+//         path: "$characteristics",
+//       },
+//     },
+//     {
+//       $out: "reviews", // "reviews_final"...previously
+//     },
+//   ];
+// };
