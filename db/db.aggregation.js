@@ -73,6 +73,19 @@ module.exports.CharacteristicsQuery = (product_id) => {
   ];
 };
 
+// module.exports.UniqueProducts = () => {
+//   return [
+//     {
+//       '$group': {
+//         '_id': null, 
+//         'uniqueProducts': {
+//           '$addToSet': '$product'
+//         }
+//       }
+//     }
+//   ]
+// };
+
 // module.exports.ETLAddPhotos = () => {
 //   return [
 //     {

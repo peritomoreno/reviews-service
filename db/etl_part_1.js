@@ -4,7 +4,7 @@ const { Reviews } = require("./db.js");
 
 var tmpArr = [];
 var start = new Date();
-console.log("Start at: ", start.toLocaleString());
+
 const rs = fs.createReadStream("etl_data.csv");
 rs.pipe(csv())
   .on("data", (data) => {
@@ -44,6 +44,7 @@ rs.pipe(csv())
     }
   })
   .on("end", () => {
+    console.log("Start at: ", start.toLocaleString());
     var end = new Date();
     console.log("Done at: ", end.toLocaleString());
   });
