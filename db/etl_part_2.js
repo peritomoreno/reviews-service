@@ -95,12 +95,51 @@ function aggregateCharacteristics(resultArray) {
   return output;
 }
 
+async function ETL2() {
+  let start = new Date();
+  let tempArr = [];
+  let done = false;
+  let product_id;
+  var productIdArray = await Reviews.distinctAsync("product");
+  while (productIdArray.length > 0) {
+    product_id = productIdArray.pop();
+    if (productIdArray.length === 0) {
+      done = true;
+    }
+    // find all reviews with this ID
+    var reviewsArray = await Reviews.findAsync(
+      { product: product_id },
+      { characteristics: 1, product: 1, rating: 1, recommend: 1 }
+    );
+    let metaData = {
+      product: product_id,
+      ratings: aggregateRatings(reviewsArray),
+      recommended: aggregateRecommended(reviewsArray),
+      characteristics: aggregateCharacteristics(reviewsArray),
+    };
+    tempArr.push(metaData);
+    if (tempArr.length === 500 || done === true) {
+      await ReviewsMeta.createAsync(tempArr);
+      tempArr = [];
+      if (done) {
+        let end = new Date();
+        console.log("Start: ", start.toLocaleString());
+        console.log("End: ", end.toLocaleString());
+      }
+    }
+  }
+}
+
+ETL2();
+
+/*
 let start = new Date();
 Reviews.distinctAsync("product").then((productIdArray) => {
   let tempArr = [];
   let done = false;
+  let product_id;
   function loadNextMeta() {
-    let product_id = productIdArray.pop();
+    product_id = productIdArray.pop();
     if (productIdArray.length === 0) {
       done = true;
     }
@@ -110,20 +149,20 @@ Reviews.distinctAsync("product").then((productIdArray) => {
       { characteristics: 1, product: 1, rating: 1, recommend: 1 }
     ).then((resultArray) => {
       // aggregate rating data
-      let ratings = aggregateRatings(resultArray);
+      // let ratings = aggregateRatings(resultArray);
       // aggregate recommendation data
-      let recommended = aggregateRecommended(resultArray);
+      // let recommended = aggregateRecommended(resultArray);
       // aggregate characteristic data
-      let characteristics = aggregateCharacteristics(resultArray);
+      // let characteristics = aggregateCharacteristics(resultArray);
 
       let metaData = {
         product: product_id,
-        ratings: ratings,
-        recommended: recommended,
-        characteristics: characteristics,
+        ratings: aggregateRatings(resultArray),
+        recommended: aggregateRecommended(resultArray),
+        characteristics: aggregateCharacteristics(resultArray),
       };
       tempArr.push(metaData);
-      if (tempArr.length === 200 || done === true) {
+      if (tempArr.length === 1000 || done === true) {
         ReviewsMeta.createAsync(tempArr).then(() => {
           tempArr = [];
           if (done) {
@@ -142,6 +181,7 @@ Reviews.distinctAsync("product").then((productIdArray) => {
   }
   loadNextMeta();
 });
+*/
 
 // some sort of set interval
 // pop off of productarray a value
