@@ -20,7 +20,7 @@ const formatNewReview = (req) => {
     body: body,
     recommend: Boolean(recommend),
     response: "",
-    date: new Date(),
+    date: (new Date()).toISOString().slice(0,10),
     reviewer_name: name,
     reviewer_email: email,
     helpfulness: 0,
