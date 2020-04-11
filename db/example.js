@@ -1,5 +1,5 @@
 module.exports.exampleReview = {
-  product: 3,
+  product: 4,
   rating: 5,
   summary: "I'm enjoying wearing these shades",
   body: "Comfortable and practical.",

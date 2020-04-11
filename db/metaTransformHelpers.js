@@ -1,53 +1,14 @@
-const {
-  aggregateRatings,
-  aggregateRecommended,
-  aggregateCharacteristics
-} = require("./metaTransformHelpers.js");
 const { Reviews, ReviewsMeta } = require("./db.js");
 
-async function ETL2() {
-  let start = new Date();
-  let tempArr = [];
-  let done = false;
-  let product_id;
-  var productIdArray = await Reviews.distinctAsync("product");
-  while (productIdArray.length > 0) {
-    product_id = productIdArray.pop();
-    if (productIdArray.length === 0) {
-      done = true;
-    }
-    // find all reviews with this ID
-    var reviewsArray = await Reviews.findAsync(
-      { product: product_id },
-      { characteristics: 1, product: 1, rating: 1, recommend: 1 }
-    );
-    let metaData = {
-      product: product_id,
-      ratings: aggregateRatings(reviewsArray),
-      recommended: aggregateRecommended(reviewsArray),
-      characteristics: aggregateCharacteristics(reviewsArray),
-    };
-    tempArr.push(metaData);
-    if (tempArr.length === 500 || done === true) {
-      await ReviewsMeta.createAsync(tempArr);
-      tempArr = [];
-      if (done) {
-        let end = new Date();
-        console.log("Start: ", start.toLocaleString());
-        console.log("End: ", end.toLocaleString());
-      }
-    }
-  }
-}
+//********************//
+//*** ETL HELPERS ****//
+//********************//
 
-ETL2();
-
-/*
-function formatNumber(num) {
+const formatNumber = (num) => {
   return (Math.round(num * 4) / 4).toFixed(2);
-}
+};
 
-function aggregateRatings(array) {
+const aggregateRatings = (array) => {
   let ratings = {
     1: 0,
     2: 0,
@@ -59,9 +20,9 @@ function aggregateRatings(array) {
     ratings[review.rating]++;
   }
   return ratings;
-}
+};
 
-function aggregateRecommended(array) {
+const aggregateRecommended = (array) => {
   let recommended = {
     1: 0,
     2: 0,
@@ -73,9 +34,9 @@ function aggregateRecommended(array) {
     recommended[review.rating] += review.recommend;
   }
   return recommended;
-}
+};
 
-function aggregateCharacteristics(resultArray) {
+const aggregateCharacteristics = (resultArray) => {
   let results = {};
   for (let review of resultArray) {
     let chars = Object.keys(review.characteristics);
@@ -134,5 +95,40 @@ function aggregateCharacteristics(resultArray) {
     }
   }
   return output;
-}
-*/
+};
+
+module.exports.aggregateRatings = aggregateRatings;
+module.exports.aggregateRecommended = aggregateRecommended;
+module.exports.aggregateCharacteristics = aggregateCharacteristics;
+module.exports.formatNumber = formatNumber;
+
+//********************//
+//* Update MetaData **//
+//********************//
+
+const upsertMetaData = (id) => {
+  // find all reviews with this ID
+  Reviews.findAsync(
+    { product: id, reported: false},
+    { characteristics: 1, product: 1, rating: 1, recommend: 1 }
+  )
+    .then((reviewsArray) => {
+      let metaData = {
+        product: id,
+        ratings: aggregateRatings(reviewsArray),
+        recommended: aggregateRecommended(reviewsArray),
+        characteristics: aggregateCharacteristics(reviewsArray),
+      };
+      return ReviewsMeta.findOneAndUpdateAsync({ product: id }, metaData, {
+        upsert: true,
+      }); // DO I NEED TO UPDATE ALL DATA? WHAT CAN CHANGE?
+    })
+    .then((result) => {
+      console.log("result of find one and update meta: ", result);
+    })
+    .catch((err) =>
+      console.log("err trying to find one and update meta: ", err)
+    );
+};
+
+module.exports.upsertMetaData = upsertMetaData;
