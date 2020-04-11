@@ -39,8 +39,7 @@ router.get("/reviews/:product_id/list", (req, res) => {
   let { count, page, sort } = req.query;
   
   let filter = { product: product_id, reported: false };
-  let options = {}
-  let sortBy;
+  let sortBy = {}
   if (sort === "newest") {
     sortBy = {date: -1}
   } else if (sort === "helpful") {
@@ -49,7 +48,7 @@ router.get("/reviews/:product_id/list", (req, res) => {
     sortBy = {date: -1, helpfulness: -1}
   }
 
-  Reviews.find(filter, null, Object.assign({}, options, sortBy)).then((results) => {
+  Reviews.find(filter, null, sortBy).then((results) => {
     res.send(results);
   });
 });

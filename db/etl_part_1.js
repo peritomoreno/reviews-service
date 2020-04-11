@@ -19,8 +19,8 @@ rs.pipe(csv())
     doc.date = data.date;
     doc.summary = data.summary;
     doc.body = data.body;
-    doc.recommend = Boolean(data.recommend);
-    doc.reported = Boolean(data.reported);
+    doc.recommend = data.recommend === "TRUE" ? true : false;
+    doc.reported = data.reported === "TRUE" ? true : false;
     doc.reviewer_name = data.reviewer_name;
     doc.reviewer_email = data.reviewer_email;
     doc.response =
@@ -28,13 +28,13 @@ rs.pipe(csv())
     doc.helpfulness = Number(data.helpfulness);
     // console.log("built up document object: ", doc);
     tmpArr.push(doc);
-    if (tmpArr.length === 200) {
+    if (tmpArr.length === 1000) {
       Reviews.createAsync(tmpArr)
         .then(() =>
           setTimeout(() => {
             console.log("resume feed");
             rs.resume();
-          }, 200)
+          }, 100)
         )
         .catch((err) => {
           console.log("err loading data: ", err);
@@ -44,9 +44,21 @@ rs.pipe(csv())
     }
   })
   .on("end", () => {
-    console.log("Start at: ", start.toLocaleString());
-    var end = new Date();
-    console.log("Done at: ", end.toLocaleString());
+    if (tmpArr.length > 0) {
+      Reviews.createAsync(tmpArr)
+        .then(() => {
+          console.log("Start at: ", start.toLocaleString());
+          var end = new Date();
+          console.log("Done at: ", end.toLocaleString());
+        })
+        .catch((err) => {
+          console.log("err loading data: ", err);
+        });
+    } else {
+      console.log("Start at: ", start.toLocaleString());
+      var end = new Date();
+      console.log("Done at: ", end.toLocaleString());
+    }
   });
 
 var createCharacteristicsObject = (data) => {
