@@ -2,6 +2,7 @@ var express = require("express");
 const { Reviews, ReviewsMeta } = require("../db/db.js");
 const { upsertMetaData } = require("../db/metaTransformHelpers.js");
 const formatNewReview = require("../db/formatReview.js");
+const formatReviewsList = require("../db/formatReviewsList.js");
 
 // create express router
 var router = express.Router();
@@ -15,6 +16,7 @@ router.use(function timeLog(req, res, next) {
 //***************//
 //***** GET *****//
 //***************//
+// Getting a Review Meta Data
 router.get("/reviews/:product_id/meta", (req, res) => {
   let { product_id } = req.params;
   ReviewsMeta.findAsync({ product: product_id })
@@ -34,22 +36,30 @@ router.get("/reviews/:product_id/meta", (req, res) => {
     });
 });
 
+// Getting a Product's List of Reviews
 router.get("/reviews/:product_id/list", (req, res) => {
   let { product_id } = req.params;
   let { count, page, sort } = req.query;
-  
+
   let filter = { product: product_id, reported: false };
-  let sortBy = {}
+  let sortBy = {};
   if (sort === "newest") {
-    sortBy = {date: -1}
+    sortBy = { date: -1 };
   } else if (sort === "helpful") {
-    sortBy = {helpfulness: -1}
+    sortBy = { helpfulness: -1 };
   } else {
-    sortBy = {date: -1, helpfulness: -1}
+    sortBy = { helpfulness: -1, date: -1 };
   }
 
-  Reviews.find(filter, null, sortBy).then((results) => {
-    res.send(results);
+  Reviews.findAsync(filter, null, { sort: sortBy }).then((results) => {
+    // count 5, page 2
+    count = count === undefined ? 5 : Number(count);
+    page = page === undefined || page === "0" ? 1 : Number(page);
+    let start = count * (page - 1);
+    let end = start + count;
+    let data = results.length < count ? results : results.slice(start, end);
+    let output = formatReviewsList(product_id, data, count, page);
+    res.send(output);
   });
 });
 
@@ -72,6 +82,49 @@ router.post("/reviews/:product_id", (req, res) => {
     .catch((err) => {
       res.send(500);
       console.log("err: ", err);
+    });
+});
+
+//***************//
+//***** PUT *****//
+//***************//
+
+// Updating a review to show it was found helpful
+router.put("/reviews/helpful/:review_id", (req, res) => {
+  let { review_id } = req.params;
+  Reviews.findOneAndUpdateAsync(
+    { _id: review_id },
+    { $inc: { helpfulness: 1 } }
+  )
+    .then(() => {
+      res.sendStatus(204);
+    })
+    .catch((err) => {
+      console.log(`ERROR updating helpfulness on review ${review_id}: `, err);
+      res.sendStatus(500);
+    });
+});
+
+// Updating a review to show it was reported
+router.put("/reviews/report/:review_id", (req, res) => {
+  let { review_id } = req.params;
+  Reviews.findOneAndUpdateAsync(
+    { _id: review_id },
+    { reported: true },
+    { new: true }
+  )
+    .then((updated) => {
+      let { product } = updated;
+      // Once updated in the Database, update the meta data document for the product to remove the review's influence
+      upsertMetaData(product);
+      res.sendStatus(204);
+    })
+    .catch((err) => {
+      console.log(
+        `ERROR updating reported status on review ${review_id}: `,
+        err
+      );
+      res.sendStatus(500);
     });
 });
 

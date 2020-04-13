@@ -121,7 +121,7 @@ const upsertMetaData = (id) => {
       };
       return ReviewsMeta.findOneAndUpdateAsync({ product: id }, metaData, {
         upsert: true,
-      }); // DO I NEED TO UPDATE ALL DATA? WHAT CAN CHANGE?
+      });
     })
     .then((result) => {
       console.log("result of find one and update meta: ", result);
