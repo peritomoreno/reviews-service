@@ -28,7 +28,7 @@ async function ETL2() {
       characteristics: aggregateCharacteristics(reviewsArray),
     };
     tempArr.push(metaData);
-    if (tempArr.length === 1000 || done === true) {
+    if (tempArr.length === 750 || done === true) {
       await ReviewsMeta.createAsync(tempArr);
       tempArr = [];
       if (done) {

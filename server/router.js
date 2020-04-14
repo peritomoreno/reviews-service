@@ -1,8 +1,9 @@
 var express = require("express");
-const { Reviews, ReviewsMeta } = require("../db/db.js");
+const { Reviews, ReviewsMeta, Characteristics } = require("../db/db.js");
 const { upsertMetaData } = require("../db/metaTransformHelpers.js");
 const formatNewReview = require("../db/formatReview.js");
 const formatReviewsList = require("../db/formatReviewsList.js");
+const formatEmptyResponse = require("./formatEmptyResponse.js");
 
 // create express router
 var router = express.Router();
@@ -16,23 +17,38 @@ router.use(function timeLog(req, res, next) {
 //***************//
 //***** GET *****//
 //***************//
+
 // Getting a Review Meta Data
 router.get("/reviews/:product_id/meta", (req, res) => {
   let { product_id } = req.params;
   ReviewsMeta.findAsync({ product: product_id })
     .then((result) => {
       let data = result[0];
-      let metaData = {
-        product_id: data.product,
-        ratings: data.ratings,
-        recommended: data.recommended,
-        characteristics: data.characteristics,
-      };
-      res.send(metaData);
+      if (data === undefined) {
+        // call Characteristics.findAsync({product_id: product_id})
+        Characteristics.findAsync({ product_id: product_id })
+          .then((results) => {
+            // transform characteristics into usable form for reply
+            let emptyData = formatEmptyResponse(results, product_id);
+            res.send(emptyData);
+          })
+          .catch((err) => {
+            console.log("error fetching characteristics: ", err);
+            res.sendStatus(500);
+          });
+      } else {
+        let metaData = {
+          product_id: data.product,
+          ratings: data.ratings,
+          recommended: data.recommended,
+          characteristics: data.characteristics,
+        };
+        res.send(metaData);
+      }
     })
     .catch((err) => {
-      console.log("err fetching meta data: ", err);
-      res.send(500);
+      console.log("err fetching meta data: ", product_id, err);
+      res.sendStatus(500);
     });
 });
 

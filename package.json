@@ -20,6 +20,7 @@
   "dependencies": {
     "bluebird": "^3.7.2",
     "body-parser": "^1.19.0",
+    "cors": "^2.8.5",
     "csv": "^5.3.2",
     "es": "^0.7.3",
     "etl": "^0.6.12",

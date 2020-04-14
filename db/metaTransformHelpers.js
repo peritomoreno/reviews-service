@@ -23,15 +23,21 @@ const aggregateRatings = (array) => {
 };
 
 const aggregateRecommended = (array) => {
-  let recommended = {
-    1: 0,
-    2: 0,
-    3: 0,
-    4: 0,
-    5: 0,
-  };
+  let recommended = {};
   for (let review of array) {
-    recommended[review.rating] += review.recommend;
+    if (review.recommend === true) {
+      if (!recommended.hasOwnProperty("1")) {
+        recommended["1"] = 1;
+      } else {
+        recommended["1"]++;
+      }
+    } else {
+      if (!recommended.hasOwnProperty("0")) {
+        recommended["0"] = 1;
+      } else {
+        recommended["0"]++;
+      }
+    }
   }
   return recommended;
 };
@@ -55,43 +61,49 @@ const aggregateCharacteristics = (resultArray) => {
   }
   let finalChars = Object.keys(results);
   let output = {
-    Size: { id: 1, value: null },
-    Width: { id: 2, value: null },
-    Comfort: { id: 3, value: null },
-    Quality: { id: 4, value: null },
-    Length: { id: 5, value: null },
-    Fit: { id: 6, value: null },
+    // Size: { id: 1, value: null },
+    // Width: { id: 2, value: null },
+    // Comfort: { id: 3, value: null },
+    // Quality: { id: 4, value: null },
+    // Length: { id: 5, value: null },
+    // Fit: { id: 6, value: null },
   };
   for (let char of finalChars) {
     if (char === "1") {
-      output.Size.value = formatNumber(
-        results[char].total / results[char].count
-      );
+      output.Size = {
+        id: 1,
+        value: formatNumber(results[char].total / results[char].count),
+      };
     }
     if (char === "2") {
-      output.Width.value = formatNumber(
-        results[char].total / results[char].count
-      );
+      output.Width = {
+        id: 2,
+        value: formatNumber(results[char].total / results[char].count),
+      };
     }
     if (char === "3") {
-      output.Comfort.value = formatNumber(
-        results[char].total / results[char].count
-      );
+      output.Comfort = {
+        id: 3,
+        value: formatNumber(results[char].total / results[char].count),
+      };
     }
     if (char === "4") {
-      output.Quality.value = formatNumber(
-        results[char].total / results[char].count
-      );
+      output.Quality = {
+        id: 4,
+        value: formatNumber(results[char].total / results[char].count),
+      };
     }
     if (char === "5") {
-      output.Length.value = formatNumber(
-        results[char].total / results[char].count
-      );
+      output.Length = {
+        id: 5,
+        value: formatNumber(results[char].total / results[char].count),
+      };
     }
     if (char === "6") {
-      output.Fit.value = formatNumber(
-        results[char].total / results[char].count
-      );
+      output.Fit = {
+        id: 6,
+        value: formatNumber(results[char].total / results[char].count),
+      };
     }
   }
   return output;
@@ -109,7 +121,7 @@ module.exports.formatNumber = formatNumber;
 const upsertMetaData = (id) => {
   // find all reviews with this ID
   Reviews.findAsync(
-    { product: id, reported: false},
+    { product: id, reported: false },
     { characteristics: 1, product: 1, rating: 1, recommend: 1 }
   )
     .then((reviewsArray) => {
@@ -132,3 +144,39 @@ const upsertMetaData = (id) => {
 };
 
 module.exports.upsertMetaData = upsertMetaData;
+
+/*
+for (let char of finalChars) {
+  if (char === "1") {
+    output.Size = {
+      id: 1,
+      value: formatNumber(results[char].total / results[char].count)
+    }
+  }
+  if (char === "2") {
+    output.Width.value = formatNumber(
+      results[char].total / results[char].count
+    );
+  }
+  if (char === "3") {
+    output.Comfort.value = formatNumber(
+      results[char].total / results[char].count
+    );
+  }
+  if (char === "4") {
+    output.Quality.value = formatNumber(
+      results[char].total / results[char].count
+    );
+  }
+  if (char === "5") {
+    output.Length.value = formatNumber(
+      results[char].total / results[char].count
+    );
+  }
+  if (char === "6") {
+    output.Fit.value = formatNumber(
+      results[char].total / results[char].count
+    );
+  }
+}
+*/
