@@ -23,20 +23,15 @@ const aggregateRatings = (array) => {
 };
 
 const aggregateRecommended = (array) => {
-  let recommended = {};
+  let recommended = {
+    0: 0,
+    1: 0,
+  };
   for (let review of array) {
     if (review.recommend === true) {
-      if (!recommended.hasOwnProperty("1")) {
-        recommended["1"] = 1;
-      } else {
-        recommended["1"]++;
-      }
+      recommended["1"]++;
     } else {
-      if (!recommended.hasOwnProperty("0")) {
-        recommended["0"] = 1;
-      } else {
-        recommended["0"]++;
-      }
+      recommended["0"]++;
     }
   }
   return recommended;
@@ -144,39 +139,3 @@ const upsertMetaData = (id) => {
 };
 
 module.exports.upsertMetaData = upsertMetaData;
-
-/*
-for (let char of finalChars) {
-  if (char === "1") {
-    output.Size = {
-      id: 1,
-      value: formatNumber(results[char].total / results[char].count)
-    }
-  }
-  if (char === "2") {
-    output.Width.value = formatNumber(
-      results[char].total / results[char].count
-    );
-  }
-  if (char === "3") {
-    output.Comfort.value = formatNumber(
-      results[char].total / results[char].count
-    );
-  }
-  if (char === "4") {
-    output.Quality.value = formatNumber(
-      results[char].total / results[char].count
-    );
-  }
-  if (char === "5") {
-    output.Length.value = formatNumber(
-      results[char].total / results[char].count
-    );
-  }
-  if (char === "6") {
-    output.Fit.value = formatNumber(
-      results[char].total / results[char].count
-    );
-  }
-}
-*/
