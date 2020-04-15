@@ -1,8 +1,22 @@
 const express = require("express");
+const cors = require("cors");
 const router = require("./router.js");
 const bodyParser = require("body-parser");
 const app = express();
-const port = 3000;
+const port = 3017;
+
+const whitelist = ["http://localhost:3000", "http://localhost:3017"]
+var corsOptions = {
+  origin: function (origin, callback) {
+    if (whitelist.indexOf(origin) !== -1) {
+      callback(null, true)
+    } else {
+      callback(new Error('Not allowed by CORS'))
+    }
+  }
+}
+
+app.use(cors(corsOptions));
 
 app.use(bodyParser.json());
 

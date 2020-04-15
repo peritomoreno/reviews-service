@@ -4,9 +4,9 @@ const { Reviews } = require("./db.js");
 
 var tmpArr = [];
 var start = new Date();
-console.log("Start at: ", start.toLocaleString());
+
 const rs = fs.createReadStream("etl_data.csv");
-  rs.pipe(csv())
+rs.pipe(csv())
   .on("data", (data) => {
     let doc = {};
     let photos = createPhotosArray(data);
@@ -19,25 +19,46 @@ const rs = fs.createReadStream("etl_data.csv");
     doc.date = data.date;
     doc.summary = data.summary;
     doc.body = data.body;
-    doc.recommend = Boolean(data.recommend);
-    doc.reported = Boolean(data.reported);
+    doc.recommend = data.recommend === "TRUE" ? true : false;
+    doc.reported = data.reported === "TRUE" ? true : false;
     doc.reviewer_name = data.reviewer_name;
     doc.reviewer_email = data.reviewer_email;
-    doc.response = data.response === "null" || data.response === "NA" ? "" : data.response;
+    doc.response =
+      data.response === "null" || data.response === "NA" ? "" : data.response;
     doc.helpfulness = Number(data.helpfulness);
     // console.log("built up document object: ", doc);
     tmpArr.push(doc);
-    if (tmpArr.length === 100) {
+    if (tmpArr.length === 1000) {
       Reviews.createAsync(tmpArr)
-        .then(() => rs.resume())
-        .catch((err) => { console.log("err loading data: ", err) });
+        .then(() =>
+          setTimeout(() => {
+            console.log("resume feed");
+            rs.resume();
+          }, 100)
+        )
+        .catch((err) => {
+          console.log("err loading data: ", err);
+        });
       tmpArr = [];
-      rs.pause()
+      rs.pause();
     }
   })
   .on("end", () => {
-    var end = new Date();
-    console.log("Done at: ", end.toLocaleString());
+    if (tmpArr.length > 0) {
+      Reviews.createAsync(tmpArr)
+        .then(() => {
+          console.log("Start at: ", start.toLocaleString());
+          var end = new Date();
+          console.log("Done at: ", end.toLocaleString());
+        })
+        .catch((err) => {
+          console.log("err loading data: ", err);
+        });
+    } else {
+      console.log("Start at: ", start.toLocaleString());
+      var end = new Date();
+      console.log("Done at: ", end.toLocaleString());
+    }
   });
 
 var createCharacteristicsObject = (data) => {

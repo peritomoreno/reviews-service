@@ -6,7 +6,7 @@ var Promise = require("bluebird");
 var mongoose = Promise.promisifyAll(require("mongoose"));
 var autoIncrement = require("mongoose-auto-increment");
 
-mongoose.connect("mongodb://localhost/service", {
+mongoose.connect("mongodb://18.221.70.144:27017/service", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
@@ -33,7 +33,7 @@ var reviewsSchema = new mongoose.Schema({
   helpfulness: Number,
   reported: Boolean,
   photos: [Object],
-  characteristics: Object
+  characteristics: Object,
 });
 
 reviewsSchema.plugin(autoIncrement.plugin, "Reviews");
@@ -56,8 +56,21 @@ var reviewsMetaSchema = new mongoose.Schema({
 var ReviewsMeta = db.model("ReviewsMeta", reviewsMetaSchema);
 
 /* ******************* */
+/* **Characteristics** */
+/* ******************* */
+
+var characteristicsSchema = new mongoose.Schema({
+  id: String,
+  product_id: String,
+  name: String,
+});
+
+var Characteristics = db.model("Characteristics", characteristicsSchema);
+
+/* ******************* */
 /* ***** EXPORTS ***** */
 /* ******************* */
 
 module.exports.Reviews = Reviews;
 module.exports.ReviewsMeta = ReviewsMeta;
+module.exports.Characteristics = Characteristics;
