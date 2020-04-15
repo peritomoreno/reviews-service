@@ -6,7 +6,7 @@ var Promise = require("bluebird");
 var mongoose = Promise.promisifyAll(require("mongoose"));
 var autoIncrement = require("mongoose-auto-increment");
 
-mongoose.connect("mongodb://localhost/service", {
+mongoose.connect("mongodb://18.221.70.144:27017/service", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
 });
