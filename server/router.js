@@ -79,7 +79,7 @@ router.get("/reviews/:product_id/list", (req, res) => {
   });
 });
 
-router.get("loaderio-2a616f385cab7958a65750c0d2907b11/", (req, res) => {
+router.get("/loaderio-2a616f385cab7958a65750c0d2907b11/", (req, res) => {
   res.send("loaderio-2a616f385cab7958a65750c0d2907b11");
 });
 
