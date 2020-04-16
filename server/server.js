@@ -5,7 +5,7 @@ const bodyParser = require("body-parser");
 const app = express();
 const port = 3017;
 
-const whitelist = ["http://localhost:3000", "http://localhost:3017", "https://loader.io/"]
+const whitelist = ["http://localhost:3000", "http://localhost:3017", "https://loader.io"]
 var corsOptions = {
   origin: function (origin, callback) {
     if (whitelist.indexOf(origin) !== -1) {
