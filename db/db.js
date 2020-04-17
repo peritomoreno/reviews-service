@@ -1,14 +1,16 @@
 /* ******************* */
 /* ***** MONGOOSE **** */
 /* ******************* */
-
+const { DB_USERNAME, DB_PASSWORD } = require("./db.config.js");
 var Promise = require("bluebird");
 var mongoose = Promise.promisifyAll(require("mongoose"));
 var autoIncrement = require("mongoose-auto-increment");
 
-mongoose.connect("mongodb://18.221.70.144:27017/service", {
+mongoose.connect("mongodb://18.220.86.81:27017/service", {
   useNewUrlParser: true,
   useUnifiedTopology: true,
+  user: DB_USERNAME,
+  pass: DB_PASSWORD
 });
 
 var db = mongoose.connection;
