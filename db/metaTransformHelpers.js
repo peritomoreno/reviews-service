@@ -130,8 +130,8 @@ const upsertMetaData = (id) => {
         upsert: true,
       });
     })
-    .then((result) => {
-      console.log("result of find one and update meta: ", result);
+    .then(() => {
+      // console.log("result of find one and update meta: ", result);
     })
     .catch((err) =>
       console.log("err trying to find one and update meta: ", err)
