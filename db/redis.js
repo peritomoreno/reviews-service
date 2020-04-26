@@ -1,5 +1,5 @@
 var redis = require("redis");
-var client = redis.createClient({"host": "localhost"}); // "redis" <- docker container // <- locally need to start redis
+var client = redis.createClient({"host": "redis"}); // "redis" <- docker container // <- locally need to start redis
 const { promisify } = require("util");
 
 const getAsync = promisify(client.get).bind(client);
