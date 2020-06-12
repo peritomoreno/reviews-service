@@ -1,6 +1,6 @@
 const csv = require("csv-parser");
 const fs = require("fs");
-const { Reviews } = require("./db.js");
+const { Reviews } = require("../db.js");
 
 var tmpArr = [];
 var start = new Date();
