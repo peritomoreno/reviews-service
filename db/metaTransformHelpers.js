@@ -55,14 +55,7 @@ const aggregateCharacteristics = (resultArray) => {
     }
   }
   let finalChars = Object.keys(results);
-  let output = {
-    // Size: { id: 1, value: null },
-    // Width: { id: 2, value: null },
-    // Comfort: { id: 3, value: null },
-    // Quality: { id: 4, value: null },
-    // Length: { id: 5, value: null },
-    // Fit: { id: 6, value: null },
-  };
+  let output = {};
   for (let char of finalChars) {
     if (char === "1") {
       output.Size = {

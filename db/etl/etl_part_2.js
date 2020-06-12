@@ -2,8 +2,8 @@ const {
   aggregateRatings,
   aggregateRecommended,
   aggregateCharacteristics
-} = require("./metaTransformHelpers.js");
-const { Reviews, ReviewsMeta } = require("./db.js");
+} = require("../metaTransformHelpers.js");
+const { Reviews, ReviewsMeta } = require("../db.js");
 
 async function ETL2() {
   let start = new Date();

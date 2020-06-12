@@ -2,3 +2,4 @@ node_modules
 etl_data_mini.csv
 etl_data.csv
 db.config.js
+package-lock.json
