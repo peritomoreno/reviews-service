@@ -2,7 +2,7 @@
 
 ### Project Overview
 
-This project is a back-end system supporting an existing client-facing retail web-portal. It is created in Nodejs. It is made up of two EC2 instances. The first contains an Express server equipped with Redis-based caching to handle periods of high customer traffic. The second instance contains a Mongo Database with over 1 million reviews and metadata for over 10,000 distinct products.
+The Reviews service is a back-end system supporting an existing client-facing retail web-portal. It is created in Nodejs and is made up of two EC2 instances. The first contains an Express server equipped with Redis-based caching to handle periods of high customer traffic. The second instance contains a Mongo Database with over 1 million reviews and metadata for over 10,000 distinct products.
 
 This is accomplished using mainly the following tools:
 
